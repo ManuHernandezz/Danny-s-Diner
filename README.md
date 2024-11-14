@@ -56,19 +56,33 @@ VALUES
   
   
  -- 1. What is the total amount each customer spent at the restaurant?
+
+```sql
+
 SELECT s.customer_id, SUM(m.price) AS total_spent
 FROM sales s
 INNER JOIN menu m
 	ON s.product_id = m.product_id
 GROUP BY s.customer_id
+       
+
+
+```
+
 
 
 -- 2. How many days has each customer visited the restaurant?
 
+
+```sql
+
 SELECT s.customer_id, COUNT(DISTINCT s.order_date) AS visit_days
 FROM sales s
 GROUP BY s.customer_id;
+       
 
+
+```
 
 -- 3. What was the first item from the menu purchased by each customer?
 
