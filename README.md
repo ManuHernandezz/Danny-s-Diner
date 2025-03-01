@@ -11,10 +11,13 @@ INNER JOIN menu m
 	ON s.product_id = m.product_id
 GROUP BY s.customer_id
        
-
-
 ```
 
+| customer_id | total_spent|
+| :---        |    :----:   |
+|A|	76 |
+|B|	74|
+|C|	36|
 
 
 ## 2. How many days has each customer visited the restaurant?
@@ -25,10 +28,14 @@ GROUP BY s.customer_id
 SELECT s.customer_id, COUNT(DISTINCT s.order_date) AS visit_days
 FROM sales s
 GROUP BY s.customer_id;
-       
-
-
+   
 ```
+
+|customer_id	|visit_days|
+| :---        |    :----:   |
+|A	|4
+|B	|6
+|C	|2
 
 ## 3. What was the first item from the menu purchased by each customer?
 ```sql
@@ -47,26 +54,29 @@ INNER JOIN menu m
 WHERE row = 1;
        
 
-
 ```
-
+|customer_id	|product_name
+| :---        |    :----:   |
+|A	|sushi
+|B	|curry
+|C	|ramen
 
 
 ## 4. What is the most purchased item on the menu and how many times was it purchased by all customers?
 
 ```sql
 
-SELECT m.product_name, COUNT(s.customer_id) AS Count_sales
+SELECT TOP 1 m.product_name,
+	COUNT(s.customer_id) AS Count_sales
 FROM sales s
-INNER JOIN menu m
-	ON m.product_id = s.product_id
-GROUP BY product_name
-ORDER BY Count_sales DESC
-LIMIT 1
-       
-
+INNER JOIN menu m ON m.product_id = s.product_id
+GROUP BY m.product_name
+ORDER BY Count_sales DESC;
 
 ```
+|product_name	|Count_sales
+| :---        |    :----:   |
+|ramen|	8
 
 
 
@@ -89,10 +99,12 @@ SELECT customer_id, product_id, sales_count
 FROM counts
 WHERE row_number = 1;
        
-
-
 ```
-
+|customer_id	|product_id	|sales_count|
+| :---        |    :----:   |    :----:   |
+|A	|3	|3
+|B	|1	|2
+|C	|3	|3
 
 
 ## 6. Which item was purchased first by the customer after they became a member?
@@ -114,12 +126,13 @@ WHERE join_date <= order_date
 SELECT join_date, customer_id, order_date, product_name
 FROM first_purchase
 WHERE row_number = 1
-
-       
-
+     
 
 ```
- 
+| join_date	|customer_id	|order_date	|product_name
+ | :---        |    :----:   |    :----:   |    :----:   |
+|2021-01-07	|A	|2021-01-07	|curry
+|2021-01-09	|B	|2021-01-11	|sushi
 
 
 ## 7. Which item was purchased just before the customer became a member?
@@ -140,12 +153,17 @@ WHERE join_date > order_date
    )
 SELECT join_date, customer_id, order_date, product_name
 FROM first_purchase
-ORDER BY customer_id
-      
+ORDER BY customer_id     
 
 
 ```
-
+|join_date	|customer_id	|order_date	|product_name
+ | :---        |    :----:   |    :----:   |    :----:   |
+|2021-01-07	|A	|2021-01-01	|sushi
+|2021-01-07	|A	|2021-01-01	|curry
+|2021-01-09	|B	|2021-01-01	|curry
+|2021-01-09	|B	|2021-01-02	|curry
+|2021-01-09	|B	|2021-01-04	|sushi
 
 
 ## 8. What is the total items and amount spent for each member before they became a member?
@@ -169,13 +187,15 @@ WHERE join_date > order_date
 SELECT  customer_id, COUNT(*) AS total_items_before_join, SUM (price) AS total_spent
 FROM first_purchase
 GROUP BY customer_id
-ORDER BY customer_id
-       
+ORDER BY customer_id      
 
 
 ```
 
-
+|customer_id	|total_items_before_join	|total_spent
+ | :---        |    :----:   |    :----: |
+|A	|2	|25
+|B	|3	|40
 
 
 ## 9.  If each $1 spent equates to 10 points and sushi has a 2x points multiplier - how many points would each customer have?
@@ -192,11 +212,15 @@ FROM sales s
 INNER JOIN menu m
 	ON m.product_id = s.product_id
 GROUP BY customer_id
-ORDER BY total_points DESC
-       
+ORDER BY total_points DESC      
 
 
 ```
+|customer_id	|total_points
+ | :---        |    :----:   | 
+|B	|940
+|A	|860
+|C	|360
 
 
 
@@ -264,6 +288,11 @@ GROUP BY
     customer_id
 ORDER BY 
     total_points DESC;
+```
+|customer_id	|total_points
+ | :---        |    :----:   | 
+|A	|1020
+|B	|320
 
 
        
